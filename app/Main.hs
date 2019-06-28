@@ -6,10 +6,37 @@ import           Development.Shake
 import           Development.Shake.FilePath
 import           Slick
 
+buildDirName :: FilePath
+buildDirName = "build"
+
+siteDirName :: FilePath
+siteDirName = "site"
+
+postsDirName :: FilePath
+postsDirName = "posts"
+
+postsDir :: FilePath
+postsDir = siteDirName </> postsDirName
+
+cssDir :: FilePath
+cssDir = siteDirName </> "css"
+
+jsDir :: FilePath
+jsDir = siteDirName </> "js"
+
+imgDir :: FilePath
+imgDir = siteDirName </> "images"
+
+templatesDir :: FilePath
+templatesDir = siteDirName </> "templates"
+
+postTemplate :: FilePath
+postTemplate = "post.html"
+
 -- convert a source filepath to a build filepath
 -- e.g. site/css/style.css -> build/css/style.css
 srcToBuild :: FilePath -> FilePath
-srcToBuild path = "build" </> dropDirectory1 path
+srcToBuild path = buildDirName </> dropDirectory1 path
 
 main :: IO ()
 main =
@@ -22,15 +49,18 @@ main =
 
     -- Require all static assets
     "static" ~> do
-      staticFiles <- getDirectoryFiles "site" ["css//*", "js//*", "images//*"]
       let copyStaticFile path = copyFileChanged path (srcToBuild path)
+      let allChildren dir = dir </> "/*"
+      staticFiles <- getDirectoryFiles "." (allChildren <$> [ cssDir
+                                                            , jsDir
+                                                            , imgDir ])
       traverse_ copyStaticFile staticFiles
 
      -- Find and require every post to be  built
      -- This uses the `~>` 'phony' rule because it doesn't actually write any
      -- files on its own
     "posts" ~> do
-      postPaths <- getDirectoryFiles "site/posts" ["*.md"]
+      postPaths <- getDirectoryFiles postsDir ["*.md"]
 
       -- We tell shake we need to build each individual post
       -- We require each post separately so that Shake can cache them
@@ -38,7 +68,7 @@ main =
       need (((-<.> "html") . srcToBuild) <$> postPaths)
 
      -- rule for actually building posts
-    "build/posts//*.html" %> \out -> do
+    ((buildDirName </> postsDirName) ++ "//*.html") %> \out -> do
 
       -- Recover the path where the source file for the post should be
       let srcPath = (dropDirectory1 out) -<.> "md"
@@ -51,7 +81,7 @@ main =
       postData <- markdownToHTML . T.pack $ fileContents
 
       -- Load a mustache template using using cache if available
-      template <- compileTemplate' "site/templates/post.html"
+      template <- compileTemplate' (templatesDir </> postTemplate)
 
       -- Fill in the template using the post metadata/content
       writeFile' out . T.unpack $ substitute template postData
