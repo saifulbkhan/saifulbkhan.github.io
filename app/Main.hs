@@ -70,7 +70,7 @@ main =
 
     -- Helper function that returns a match pattern for all children in a given
     -- directory
-    let allChildren dir = dir </> "/*"
+    let allChildren dir = dir ++ "//*"
 
     -- Require all static assets
     staticDirName ~> do
@@ -91,7 +91,7 @@ main =
     buildDirName </> indexTemplate %> buildIndex postCache
 
     -- rule for actually building posts
-    buildDirName </> postsDirName </> "/*.html" %> buildPost postCache
+    buildDirName </> postsDirName ++ "/*.html" %> buildPost postCache
 
 -- | Represents the template dependencies of the index page
 data IndexInfo =
@@ -128,7 +128,7 @@ newtype PostFilePath =
 
 -- | Discover all available post source files
 postNames :: Action [FilePath]
-postNames = getDirectoryFiles "." [postsDir </> "/*.md"]
+postNames = getDirectoryFiles "." [postsDir ++ "//*.md"]
 
 -- | convert 'build' filepaths into source file filepaths
 destToSrc :: FilePath -> FilePath
