@@ -9,7 +9,7 @@ import           Control.Lens
 import           Data.Aeson                 as A
 import           Data.Aeson.Lens
 import           Data.Function              (on)
-import           Data.List                  (sortBy)
+import           Data.List                  (sortBy, take)
 import           Data.Map                   as M
 import           Data.Monoid
 import           Data.Set                   as S
@@ -21,6 +21,10 @@ import           Development.Shake.Classes
 import           Development.Shake.FilePath
 import           GHC.Generics               (Generic)
 import           Slick
+
+-- | Shows this many latest post on main webpage
+showLatestN :: Int
+showLatestN = 3
 
 buildDirName :: FilePath
 buildDirName = "dist"
@@ -143,6 +147,29 @@ srcToDest p = buildDirName </> dropDirectory1 p
 srcToURL :: FilePath -> String
 srcToURL = ("/" ++) . dropDirectory1 . (-<.> ".html")
 
+-- | Convert a date-time string to a UTCTime. It considers two different formats
+-- and if neither fits, the result is Nothing.
+stringToDate :: String -> Maybe UTCTime
+stringToDate s =
+  case timeWithSpace of
+    Nothing -> fmap zonedTimeToUTC timeWithT
+    _ -> fmap zonedTimeToUTC timeWithSpace
+  where
+    parseDt = parseTimeM True defaultTimeLocale
+    timeWithSpace = parseDt "%F %T%z" s :: Maybe ZonedTime
+    timeWithT = parseDt "%FT%T%z" s :: Maybe ZonedTime
+
+-- | Sorts a list of posts by the date on which they were written (ascending).
+sortByTime :: [Post] -> [Post]
+sortByTime posts = sortBy sortFn posts
+  where
+    sortFn p p' =
+      let t = stringToDate $ date p
+          t' = stringToDate $ date p'
+      in case diffUTCTime <$> t <*> t' of
+        Nothing -> LT
+        Just timeDiff -> compare timeDiff 0.0
+
 -- | Given a post source-file's file path as a cache key, load the Post object
 -- for it. This is used with 'jsonCache' to provide post caching.
 loadPost :: PostFilePath -> Action Post
@@ -157,9 +184,10 @@ loadPost (PostFilePath postPath) = do
 -- | given a cache of posts this will build a table of contents
 buildIndex :: (PostFilePath -> Action Post) -> FilePath -> Action ()
 buildIndex postCache out = do
-  posts <- postNames >>= traverse (postCache . PostFilePath)
+  allPosts <- postNames >>= traverse (postCache . PostFilePath)
   indexT <- compileTemplate' (templatesDir </> indexTemplate)
-  let indexInfo = IndexInfo {posts}
+  let posts = Data.List.take showLatestN . reverse . sortByTime $ allPosts
+      indexInfo = IndexInfo {posts}
       indexHTML = T.unpack $ substitute indexT (toJSON indexInfo)
   writeFile' out indexHTML
 

@@ -8,10 +8,19 @@
 </head>
 
 <body>
+  <section class="heading">
+    <h1>Saiful B. Khan</h1>
+  </section>
   <section class="main">
       <div class="container">
           <div class="content">
-            <p>Hello World!</p>
+            <h3>Recent Posts</h3>
+            {{# posts }}
+              <p><a href="{{ url }}"><b>{{ title }}</b></a></p>
+            {{/ posts }}
+            {{^ posts }}
+              Nothing here yet! :(
+            {{/ posts }}
           </div>
       </div>
   </section>
