@@ -16,15 +16,15 @@
           <div class="content">
             <h3>Recent Posts</h3>
             {{# posts }}
-            <div class="post-item">
-              <div class="post-title">
-                <a href="{{ url }}"><b>{{ title }}</b></a>
+              <div class="post-item">
+                <div class="post-title">
+                  <a href="{{ url }}"><b>{{ title }}</b></a>
+                </div>
+                <div class="post-date">{{ date }}</div>
               </div>
-              <div class="post-date">{{ date }}</div>
-            </div>
             {{/ posts }}
             {{^ posts }}
-              Nothing here yet! :(
+              <p>Nothing here yet! :(</p>
             {{/ posts }}
           </div>
       </div>
