@@ -5,10 +5,10 @@ date: 2016-06-08 16:17:34+00:00
 title: The UX for GNOME Music's tag editor
 wordpress_id: 125
 categories:
-- GNOME
+  - GNOME
 tags:
-- gnome-music
-- GSoC
+  - gnome-music
+  - GSoC
 ---
 
 Its the second week of GSoC 2016.  The development of a functional UI editor dialog is in progress. The editor at first should be able to allow the user to edit common tags ('title', 'album', 'artist', etc.) for a single song. If done properly it would pave a way to implement automatic tag suggestions and extensions for editing multiple songs (related or not) at once through the dialog.

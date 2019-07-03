@@ -5,7 +5,7 @@ date: 2016-04-30 08:35:16+00:00
 title: Hello World!
 wordpress_id: 3
 categories:
-- General
+  - Others
 ---
 
 With this canonical phrase I being my journey into software and ... stuff that I'd like to write about.<!-- more -->

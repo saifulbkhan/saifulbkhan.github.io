@@ -5,10 +5,10 @@ date: 2016-07-28 10:21:41+00:00
 title: Automatic metadata download in Music
 wordpress_id: 369
 categories:
-- GNOME
+  - GNOME
 tags:
-- gnome-music
-- GSoC
+  - gnome-music
+  - GSoC
 ---
 
 Its been quite some time since I last blogged. My semester exams prevented me from working on the project. I've had a month after that to get automatic metadata fetching available for the tag editor.<!-- more -->

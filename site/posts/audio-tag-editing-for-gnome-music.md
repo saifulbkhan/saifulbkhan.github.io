@@ -6,10 +6,10 @@ excerpt: A look into what I'll be working on this summer.
 title: Audio tag editing for GNOME Music
 wordpress_id: 30
 categories:
-- GNOME
+  - GNOME
 tags:
-- gnome-music
-- GSoC
+  - gnome-music
+  - GSoC
 ---
 
 So I got a mail a few days back that read _"Congratulations! Your proposal with GNOME has been accepted"_ for [Google Summer of Code](https://summerofcode.withgoogle.com/).<!-- more -->

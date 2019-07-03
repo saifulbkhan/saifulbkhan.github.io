@@ -5,10 +5,9 @@ date: 2016-08-23 20:39:05+00:00
 title: GUADEC... Its been fun.
 wordpress_id: 559
 categories:
-- General
-- GNOME
+  - GNOME
 tags:
-- GUADEC
+  - GUADEC
 ---
 
 I'm not really much of a traveler or outgoing in any way. So when I was invited to [GUADEC](http://2016.guadec.org), I wasn't very sure about it. It took some encouragement from my mentor and a fellow GSoC mate to convince me. And... I'm glad I went!

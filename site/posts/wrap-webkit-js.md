@@ -1,9 +1,10 @@
 ---
 author: Saiful B. Khan
 categories:
-  - GNOME, WebKit
+  - GNOME
+  - WebKit
 tags:
-  - webkit-javascript, gobject-introspection
+  - gobject-introspection
 title: "Wrapping Webkit's Javascript call API"
 date: "2017-09-30T21:47:28+05:30"
 draft: false
