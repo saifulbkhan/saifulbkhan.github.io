@@ -159,6 +159,24 @@ stringToDate s =
     timeWithSpace = parseDt "%F %T%z" s :: Maybe ZonedTime
     timeWithT = parseDt "%FT%T%z" s :: Maybe ZonedTime
 
+-- | Given a UTCTime, outputs a String formatted as:
+-- {full name of month} {day of month}, {year without padding}.
+dateFormatFn :: UTCTime -> String
+dateFormatFn = formatTime defaultTimeLocale "%B %d, %Y"
+
+-- | Given a UTCTime, outputs a String formatted as:
+-- {hour of day-half, 12 hour}:{minute of hour} {day-half of day},
+-- {day of month} {short name of month} {year without padding} ({time zone})
+dateTimeFormatFn :: UTCTime -> String
+dateTimeFormatFn = formatTime defaultTimeLocale "%I:%M %p, %d %b %Y (%Z)"
+
+-- | Given a date-time formatting function and a Post, changes the string format
+-- of the "date" field of the post using the formatting function.
+formatPostDate :: (UTCTime -> String) -> Post -> Post
+formatPostDate fn p = case stringToDate (date p) of
+  Nothing -> p
+  Just utc -> p { date = fn utc }
+
 -- | Sorts a list of posts by the date on which they were written (ascending).
 sortByTime :: [Post] -> [Post]
 sortByTime posts = sortBy sortFn posts
@@ -186,7 +204,8 @@ buildIndex :: (PostFilePath -> Action Post) -> FilePath -> Action ()
 buildIndex postCache out = do
   allPosts <- postNames >>= traverse (postCache . PostFilePath)
   indexT <- compileTemplate' (templatesDir </> indexTemplate)
-  let posts = Data.List.take showLatestN . reverse . sortByTime $ allPosts
+  let latest = Data.List.take showLatestN . reverse . sortByTime $ allPosts
+      posts = (formatPostDate dateFormatFn) <$> latest
       indexInfo = IndexInfo {posts}
       indexHTML = T.unpack $ substitute indexT (toJSON indexInfo)
   writeFile' out indexHTML
@@ -198,11 +217,12 @@ requirePosts = do
   pNames <- postNames
   need ((\p -> srcToDest p -<.> "html") <$> pNames)
 
--- Build an html file for a given post given a cache of posts.
+-- | Build an html file for a given post given a cache of posts.
 buildPost :: (PostFilePath -> Action Post) -> FilePath -> Action ()
 buildPost postCache out = do
   let srcPath = destToSrc out -<.> "md"
       postURL = srcToURL srcPath
   post <- postCache (PostFilePath srcPath)
   template <- compileTemplate' (templatesDir </> postTemplate)
-  writeFile' out . T.unpack $ substitute template (toJSON post)
+  writeFile' out . T.unpack $
+    substitute template (toJSON . formatPostDate dateTimeFormatFn $ post)
