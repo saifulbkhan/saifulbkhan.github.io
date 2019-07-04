@@ -61,6 +61,9 @@ postTemplate = "post.html"
 indexTemplate :: FilePath
 indexTemplate = "index.html"
 
+archiveTemplate :: FilePath
+archiveTemplate = "posts.html"
+
 main :: IO ()
 main =
   shakeArgs shakeOptions {shakeVerbosity = Chatty} $ do
@@ -72,6 +75,7 @@ main =
     siteDirName ~> need [ staticDirName
                         , postsDirName
                         , buildDirName </> indexTemplate
+                        , buildDirName </> archiveTemplate
                         ]
 
     -- Helper function that returns a match pattern for all children in a given
@@ -93,8 +97,11 @@ main =
      -- Find and require every post to be built
     postsDirName ~> requirePosts
 
-    -- build the main table of contents
+    -- build the main landing page
     buildDirName </> indexTemplate %> buildIndex postCache
+
+    -- build the blog archive
+    buildDirName </> archiveTemplate %> buildArchive postCache
 
     -- rule for actually building posts
     buildDirName </> postsDirName ++ "/*.html" %> buildPost postCache
@@ -217,7 +224,7 @@ loadPost (PostFilePath postPath) = do
     assignBool (Just x) field = _Object .at field ?~ Bool x
     assignBool Nothing field = _Object .at field ?~ Bool False
 
--- | given a cache of posts this will build a table of contents
+-- | given a cache of posts this will create landing page with latest posts
 buildIndex :: (PostFilePath -> Action Post) -> FilePath -> Action ()
 buildIndex postCache out = do
   allPosts <- postNames >>= traverse (postCache . PostFilePath)
@@ -227,6 +234,17 @@ buildIndex postCache out = do
       indexInfo = IndexInfo {posts}
       indexHTML = T.unpack $ substitute indexT (toJSON indexInfo)
   writeFile' out indexHTML
+
+-- | given a cache of posts this will create a blog archive
+buildArchive :: (PostFilePath -> Action Post) -> FilePath -> Action ()
+buildArchive postCache out = do
+  allPosts <- postNames >>= traverse (postCache . PostFilePath)
+  archiveT <- compileTemplate' (templatesDir </> archiveTemplate)
+  let sorted = reverse . sortByTime $ allPosts
+      posts = (formatPostDate dateFormatFn) <$> sorted
+      indexInfo = IndexInfo {posts}
+      archiveHTML = T.unpack $ substitute archiveT (toJSON indexInfo)
+  writeFile' out archiveHTML
 
 -- | Find all post source files and tell shake to build the corresponding html
 -- pages.
