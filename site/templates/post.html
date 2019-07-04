@@ -11,7 +11,24 @@
 <body>
   <header class="heading">
     <h1>{{ title }}</h1>
-    <p>Written on {{ date }}.</p>
+    <p>Written on {{ date }}
+      {{# hasCategory }}
+        under
+        {{# categories }}
+          {{ . }}
+        {{/ categories }}
+      {{/ hasCategory }}
+      {{# hasTag }}
+        with tags
+        {{# tags }}
+          {{ . }}
+        {{/ tags }}
+      {{/ hasTag }}
+      .
+      {{^ hasTag }}
+      .
+      {{/ hasTag }}
+    </p>
   </header>
   <section class="main">
       <div class="container">

@@ -8,6 +8,8 @@ module Main where
 import           Control.Lens
 import           Data.Aeson                 as A
 import           Data.Aeson.Lens
+import           Data.Aeson.Types           (Parser, parseMaybe)
+import           Data.Maybe                 (isNothing)
 import           Data.Function              (on)
 import           Data.List                  (sortBy, take)
 import           Data.Map                   as M
@@ -111,13 +113,15 @@ instance ToJSON IndexInfo
 -- | A JSON serializable representation of a post's metadata
 data Post =
   Post
-    { title      :: String
-    , author     :: String
-    , content    :: String
-    , url        :: String
-    , date       :: String
-    , tags       :: Maybe [String]
-    , categories :: Maybe [String]
+    { title       :: String
+    , author      :: String
+    , content     :: String
+    , url         :: String
+    , date        :: String
+    , hasTag      :: Maybe Bool
+    , hasCategory :: Maybe Bool
+    , tags        :: Maybe [String]
+    , categories  :: Maybe [String]
     }
   deriving (Generic, Eq, Ord, Show)
 
@@ -188,6 +192,13 @@ sortByTime posts = sortBy sortFn posts
         Nothing -> LT
         Just timeDiff -> compare timeDiff 0.0
 
+-- | Obtains the tags and categories from a Post object.
+tagsAndCategories :: Value -> Parser (Maybe [String], Maybe [String])
+tagsAndCategories = withObject "tuple" $ \o -> do
+  t <- o .: "tags"
+  c <- o .: "categories"
+  return (t, c)
+
 -- | Given a post source-file's file path as a cache key, load the Post object
 -- for it. This is used with 'jsonCache' to provide post caching.
 loadPost :: PostFilePath -> Action Post
@@ -197,7 +208,14 @@ loadPost (PostFilePath postPath) = do
   let postURL = T.pack . srcToURL $ postPath
       withURL = _Object . at "url" ?~ String postURL
       withSrc = _Object . at "srcPath" ?~ String (T.pack srcPath)
-  convert . withSrc . withURL $ postData
+      maybeTnC = parseMaybe tagsAndCategories postData
+      withTag = assignBool (not . isNothing . fst <$> maybeTnC) "hasTag"
+      withCat = assignBool (not . isNothing . snd <$> maybeTnC) "hasCategory"
+  convert . withSrc . withURL . withTag . withCat $ postData
+  where
+    assignBool :: Maybe Bool -> T.Text -> (Value -> Value)
+    assignBool (Just x) field = _Object .at field ?~ Bool x
+    assignBool Nothing field = _Object .at field ?~ Bool False
 
 -- | given a cache of posts this will build a table of contents
 buildIndex :: (PostFilePath -> Action Post) -> FilePath -> Action ()
