@@ -19,7 +19,7 @@ extra-source-files:
 description:         Blog generator and source files
 
 executables:
-  blog-exe:
+  blog:
     main:                Main.hs
     source-dirs:         app
     ghc-options:

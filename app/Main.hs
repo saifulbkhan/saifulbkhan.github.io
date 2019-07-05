@@ -40,8 +40,14 @@ staticDirName = "static"
 postsDirName :: FilePath
 postsDirName = "posts"
 
+miscDirName :: FilePath
+miscDirName = "misc"
+
 postsDir :: FilePath
 postsDir = siteDirName </> postsDirName
+
+miscDir :: FilePath
+miscDir = siteDirName </> miscDirName
 
 cssDir :: FilePath
 cssDir = siteDirName </> "css"
@@ -64,6 +70,9 @@ indexTemplate = "index.html"
 archiveTemplate :: FilePath
 archiveTemplate = "posts.html"
 
+aboutTemplate :: FilePath
+aboutTemplate = "about.html"
+
 main :: IO ()
 main =
   shakeArgs shakeOptions {shakeVerbosity = Chatty} $ do
@@ -76,6 +85,7 @@ main =
                         , postsDirName
                         , buildDirName </> indexTemplate
                         , buildDirName </> archiveTemplate
+                        , buildDirName </> aboutTemplate
                         ]
 
     -- Helper function that returns a match pattern for all children in a given
@@ -102,6 +112,9 @@ main =
 
     -- build the blog archive
     buildDirName </> archiveTemplate %> buildArchive postCache
+
+    -- build the about page
+    buildDirName </> aboutTemplate %> buildPage (miscDir </> "about.md")
 
     -- rule for actually building posts
     buildDirName </> postsDirName ++ "/*.html" %> buildPost postCache
@@ -245,6 +258,14 @@ buildArchive postCache out = do
       indexInfo = IndexInfo {posts}
       archiveHTML = T.unpack $ substitute archiveT (toJSON indexInfo)
   writeFile' out archiveHTML
+
+-- | Given a file path this will create a page
+buildPage :: FilePath -> FilePath -> Action ()
+buildPage pageSrc out = do
+  page <- loadPost $ PostFilePath pageSrc
+  aboutT <- compileTemplate' (templatesDir </> aboutTemplate)
+  let aboutHTML = T.unpack $ substitute aboutT (toJSON page)
+  writeFile' out aboutHTML
 
 -- | Find all post source files and tell shake to build the corresponding html
 -- pages.
