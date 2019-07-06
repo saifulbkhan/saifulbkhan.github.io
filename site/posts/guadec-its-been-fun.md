@@ -32,7 +32,7 @@ So in short this is how I'd summarize my experience:
 
 I'm sorry if using a list is a crappy way of documenting one's travels. But overall I'd say this visit has given me a different outlook and confidence towards being a contributor to GNOME and the open source community in general. Thank you GNOME for sponsoring me.
 
-![gnome-sponsorship-badge](https://wiki.gnome.org/Travel/Policy?action=AttachFile&do=get&target=sponsored-badge-simple.png)
+![gnome-sponsorship-badge](/images/posts/gnome-sponsorship-badge.png)
 
 And another big thanks to the organizers for arranging the picnic and other lovely excursions! I'll make sure to provide a helping hand next time.
 
