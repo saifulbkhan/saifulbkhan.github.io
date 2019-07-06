@@ -50,13 +50,13 @@ miscDir :: FilePath
 miscDir = siteDirName </> miscDirName
 
 cssDir :: FilePath
-cssDir = siteDirName </> "css"
+cssDir = "css"
 
 jsDir :: FilePath
-jsDir = siteDirName </> "js"
+jsDir = "js"
 
 imgDir :: FilePath
-imgDir = siteDirName </> "images"
+imgDir = "images"
 
 templatesDir :: FilePath
 templatesDir = siteDirName </> "templates"
@@ -98,7 +98,7 @@ main =
                                                                      , jsDir
                                                                      , imgDir
                                                                      ]
-      need ((buildDirName </>) . dropDirectory1 <$> staticFiles)
+      need ((buildDirName </>) <$> staticFiles)
 
     -- Rule for handling static assets, just copy them from source to dest
     allChildren <$> (buildDirName </>) <$> [cssDir, jsDir, imgDir] |%> \out ->
