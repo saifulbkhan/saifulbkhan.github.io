@@ -1,0 +1,75 @@
+html,
+body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  max-width: 50em;
+}
+
+body {
+  color: #555;
+  font-family: "Georgia", serif;
+}
+
+.heading,
+.main,
+footer {
+  line-height: 1.5;
+  padding: 0 1em;
+}
+
+.heading {
+  padding-top: 4em;
+}
+
+.main {
+  padding-bottom: 4em;
+  flex-grow: 1;
+}
+
+a {
+  color: #5b5be5;
+}
+
+a:visited {
+  color: #666;
+}
+
+h2 {
+  margin-top: 1em;
+  padding-top: 1em;
+}
+
+h1,
+h2,
+strong {
+  color: #333;
+}
+
+code,
+pre {
+  background: #eee;
+}
+
+code {
+  padding: 2px 4px;
+  vertical-align: text-bottom;
+}
+
+pre {
+  padding: 1em;
+  border-left: 2px solid #69c;
+}
+
+hr {
+  border: 2px solid #eee;
+  margin: 2rem auto;
+}
+
+footer {
+  padding-bottom: 4em;
+}
