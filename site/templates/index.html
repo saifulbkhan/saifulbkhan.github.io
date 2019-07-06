@@ -16,22 +16,22 @@
     </div>
   </header>
   <section class="main">
-      <div class="container">
-          <div class="content">
-            <h2>Recent Posts</h2>
-            {{# posts }}
-              <div class="post-item">
-                <div class="post-title">
-                  <a href="{{ url }}"><b>{{ title }}</b></a>
-                </div>
-                <div class="post-date">{{ date }}</div>
-              </div>
-            {{/ posts }}
-            {{^ posts }}
-              <p>Nothing here yet! :(</p>
-            {{/ posts }}
+    <div class="container">
+      <div class="content">
+        <h2>Recent Posts</h2>
+        {{# posts }}
+          <div class="post-item">
+            <div class="post-title">
+              <a href="{{ url }}"><b>{{ title }}</b></a>
+            </div>
+            <div class="post-date">{{ date }}</div>
           </div>
+        {{/ posts }}
+        {{^ posts }}
+          <p>Nothing here yet! :(</p>
+        {{/ posts }}
       </div>
+    </div>
   </section>
 </body>
 
