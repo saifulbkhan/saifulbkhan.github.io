@@ -15,13 +15,13 @@
       {{# hasCategory }}
         under
         {{# categories }}
-          {{ . }}
+          <a href="/categories/{{ . }}">{{ . }}</a>
         {{/ categories }}
       {{/ hasCategory }}
       {{# hasTag }}
         with tags
         {{# tags }}
-          {{ . }}
+          <a href="/tags/{{ . }}">{{ . }}</a>
         {{/ tags }}
         .
       {{/ hasTag }}
