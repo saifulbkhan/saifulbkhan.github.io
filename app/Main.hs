@@ -43,6 +43,12 @@ postsDirName = "posts"
 miscDirName :: FilePath
 miscDirName = "misc"
 
+tagsDirName :: FilePath
+tagsDirName = "tags"
+
+categoriesDirName :: FilePath
+categoriesDirName = "categories"
+
 postsDir :: FilePath
 postsDir = siteDirName </> postsDirName
 
@@ -67,8 +73,8 @@ postTemplate = "post.html"
 indexTemplate :: FilePath
 indexTemplate = "index.html"
 
-archiveTemplate :: FilePath
-archiveTemplate = "posts.html"
+collectionTemplate :: FilePath
+collectionTemplate = "posts.html"
 
 aboutTemplate :: FilePath
 aboutTemplate = "about.html"
@@ -83,8 +89,10 @@ main =
     -- Require all the things we need to build the whole site
     siteDirName ~> need [ staticDirName
                         , postsDirName
+                        , tagsDirName
+                        , categoriesDirName
                         , buildDirName </> indexTemplate
-                        , buildDirName </> archiveTemplate
+                        , buildDirName </> collectionTemplate
                         , buildDirName </> aboutTemplate
                         ]
 
@@ -107,17 +115,30 @@ main =
      -- Find and require every post to be built
     postsDirName ~> requirePosts
 
+     -- Find and require every tag page to be built
+    tagsDirName ~> requireSubjects postCache tags tagsDirName
+
+     -- Find and require every category page to be built
+    categoriesDirName ~> requireSubjects postCache categories categoriesDirName
+
     -- build the main landing page
     buildDirName </> indexTemplate %> buildIndex postCache
 
     -- build the blog archive
-    buildDirName </> archiveTemplate %> buildArchive postCache
+    buildDirName </> collectionTemplate %> buildArchive postCache
 
     -- build the about page
     buildDirName </> aboutTemplate %> buildPage (miscDir </> "about.md")
 
     -- rule for actually building posts
     buildDirName </> postsDirName ++ "/*.html" %> buildPost postCache
+
+    -- rule for building required tags
+    buildDirName </> tagsDirName ++ "/*.html" %> buildSubject postCache tags
+
+    -- rule for building required categories
+    buildDirName </> categoriesDirName ++ "/*.html" %>
+      buildSubject postCache categories
 
 -- | Represents the template dependencies of the index page
 data IndexInfo =
@@ -129,6 +150,19 @@ data IndexInfo =
 instance FromJSON IndexInfo
 
 instance ToJSON IndexInfo
+
+-- | Represents the template dependencies of a collection (can be useful for
+-- tags, categories, topics, etc.)
+data CollectionInfo =
+  CollectionInfo
+    { subject    :: String
+    , collection :: [Post]
+    }
+  deriving (Generic, Show)
+
+instance FromJSON CollectionInfo
+
+instance ToJSON CollectionInfo
 
 -- | A JSON serializable representation of a post's metadata
 data Post =
@@ -219,6 +253,25 @@ tagsAndCategories = withObject "tuple" $ \o -> do
   c <- o .: "categories"
   return (t, c)
 
+-- | Obtain all the given type of subjects attributed to an entire collection
+-- of posts.
+getSubjects :: [Post] -> (Post -> Maybe [String]) -> [String]
+getSubjects posts stype = S.toList $ extractS posts S.empty
+  where
+    extractS []     found = found
+    extractS (p:ps) found = case (stype p) of
+      Nothing -> extractS ps found
+      Just ss -> extractS ps $ S.union (S.fromList ss) found
+
+-- | Filter all the posts based on the criterion of whether they are attributed
+-- to a given subject.
+getPostsWithSubject :: String -> [Post] -> (Post -> Maybe [String]) -> [Post]
+getPostsWithSubject subject posts stype = Prelude.filter checkSubject posts
+  where
+    checkSubject p = case (stype p) of
+      Nothing -> False
+      Just ss -> elem subject ss
+
 -- | Given a post source-file's file path as a cache key, load the Post object
 -- for it. This is used with 'jsonCache' to provide post caching.
 loadPost :: PostFilePath -> Action Post
@@ -252,11 +305,12 @@ buildIndex postCache out = do
 buildArchive :: (PostFilePath -> Action Post) -> FilePath -> Action ()
 buildArchive postCache out = do
   allPosts <- postNames >>= traverse (postCache . PostFilePath)
-  archiveT <- compileTemplate' (templatesDir </> archiveTemplate)
-  let sorted = reverse . sortByTime $ allPosts
-      posts = (formatPostDate dateFormatFn) <$> sorted
-      indexInfo = IndexInfo {posts}
-      archiveHTML = T.unpack $ substitute archiveT (toJSON indexInfo)
+  archiveT <- compileTemplate' (templatesDir </> collectionTemplate)
+  let subject = "Archive"
+      sorted = reverse . sortByTime $ allPosts
+      collection = (formatPostDate dateFormatFn) <$> sorted
+      archiveInfo = CollectionInfo {subject, collection}
+      archiveHTML = T.unpack $ substitute archiveT (toJSON archiveInfo)
   writeFile' out archiveHTML
 
 -- | Given a file path this will create a page
@@ -266,6 +320,20 @@ buildPage pageSrc out = do
   aboutT <- compileTemplate' (templatesDir </> aboutTemplate)
   let aboutHTML = T.unpack $ substitute aboutT (toJSON page)
   writeFile' out aboutHTML
+
+-- | Find all subjects in source files and tell shake to build the corresponding
+-- html pages.
+requireSubjects :: (PostFilePath -> Action Post)
+                -> (Post -> Maybe [String])
+                -> FilePath
+                -> Action ()
+requireSubjects postCache stype dirName = do
+  allPosts <- postNames >>= traverse (postCache . PostFilePath)
+  let subjectNames = getSubjects allPosts stype
+  need ((\s -> addExtension s "html")
+        <$> (buildDirName </>)
+        <$> (dirName </>)
+        <$> subjectNames)
 
 -- | Find all post source files and tell shake to build the corresponding html
 -- pages.
@@ -283,3 +351,17 @@ buildPost postCache out = do
   template <- compileTemplate' (templatesDir </> postTemplate)
   writeFile' out . T.unpack $
     substitute template (toJSON . formatPostDate dateTimeFormatFn $ post)
+
+-- | Build an html file for a given subject given a cache of posts.
+buildSubject :: (PostFilePath -> Action Post)
+             -> (Post -> Maybe [String])
+             -> FilePath
+             -> Action ()
+buildSubject postCache stype out = do
+  allPosts <- postNames >>= traverse (postCache . PostFilePath)
+  collectionT <- compileTemplate' (templatesDir </> collectionTemplate)
+  let subject = takeBaseName out
+      collection = getPostsWithSubject subject allPosts stype
+      subjectInfo = CollectionInfo {subject, collection}
+      subjectHTML = T.unpack $ substitute collectionT (toJSON subjectInfo)
+  writeFile' out subjectHTML
