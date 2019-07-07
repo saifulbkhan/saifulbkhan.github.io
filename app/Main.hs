@@ -64,6 +64,9 @@ jsDir = "js"
 imgDir :: FilePath
 imgDir = "images"
 
+fontsDir :: FilePath
+fontsDir = "fonts"
+
 templatesDir :: FilePath
 templatesDir = siteDirName </> "templates"
 
@@ -105,12 +108,13 @@ main =
       staticFiles <- getDirectoryFiles siteDirName $ allChildren <$> [ cssDir
                                                                      , jsDir
                                                                      , imgDir
+                                                                     , fontsDir
                                                                      ]
       need ((buildDirName </>) <$> staticFiles)
 
     -- Rule for handling static assets, just copy them from source to dest
-    allChildren <$> (buildDirName </>) <$> [cssDir, jsDir, imgDir] |%> \out ->
-      do copyFileChanged (siteDirName </> dropDirectory1 out) out
+    allChildren <$> (buildDirName </>) <$> [cssDir, jsDir, imgDir, fontsDir] |%>
+      \out -> do copyFileChanged (siteDirName </> dropDirectory1 out) out
 
      -- Find and require every post to be built
     postsDirName ~> requirePosts

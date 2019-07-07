@@ -1,3 +1,5 @@
+@import '/fonts/libre-baskerville/libre-baskerville.css';
+
 html,
 body {
   height: 100%;
@@ -12,7 +14,7 @@ body {
 
 body {
   color: #555;
-  font-family: "Georgia", serif;
+  font-family: "Libre Baskerville", "Georgia", serif;
 }
 
 .heading,
@@ -32,11 +34,19 @@ footer {
 }
 
 a {
-  color: #5b5be5;
+  color: #555;
+}
+
+a:hover {
+  color: #2558ff;
 }
 
 a:visited {
-  color: #666;
+  color: #777;
+}
+
+a:visited:hover {
+  color: #2558ff;
 }
 
 h2 {
