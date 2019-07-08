@@ -16,6 +16,7 @@ body {
 
 .heading,
 .main,
+.navbar-container,
 footer {
   line-height: 1.5;
   padding: 0 1em;
@@ -30,14 +31,30 @@ footer {
   flex-grow: 1;
 }
 
-.main-navigation  {
-  padding: 0.5em 0;
+.main-navigation,
+.navbar,
+.copyright-text {
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  margin: 0;
   border-style: solid;
   border-color: #888;
+}
+
+.main-navigation  {
   border-width: 1px 0;
 }
 
-.main-navigation > * {
+.navbar {
+  border-width: 0 0 1px 0;
+}
+
+.copyright-text {
+  border-width: 1px 0 0 0;
+}
+
+.main-navigation > *,
+.navbar > * {
   text-decoration: none;
   margin-right: 0.5em;
 }
@@ -102,8 +119,4 @@ pre {
 hr {
   border: 2px solid #eee;
   margin: 2rem auto;
-}
-
-footer {
-  padding-bottom: 4em;
 }
