@@ -21,9 +21,15 @@ Its the second week of GSoC 2016.  The development of a functional UI editor di
 
 A song needs to be first selected if it is to be edited. This can be done through the _Songs_ view or the _AlbumWidget_ for a particular album. When the user selects a (single) song from one of these places, the _actionbar_ reveals itself which now offers an '**Edit Details'** button along with one of the playlist management buttons.
 
-![GNOME Music: selecting songs in 'Songs' view](/images/posts/scr11.png) Selecting songs from 'Songs' view
+<p class="image bordered">
+  <img alt="GNOME Music: selecting songs in 'Songs' view" src="/images/posts/scr11.png">
+  Selecting songs from 'Songs' view
+</p>
 
-![GNOME Music: selecting songs from an album](/images/posts/scr21.png) Selecting songs from an album
+<p class="image bordered">
+  <img alt="GNOME Music: selecting songs from an album" src="/images/posts/scr21.png">
+  Selecting songs from an album
+</p>
 
 If the user chooses to _Edit Details_ of the selected song, the editor dialog is brought up.
 
@@ -33,9 +39,15 @@ If the user chooses to _Edit Details_ of the selected song, the editor dialog is
 
 The editor responsible managing details of a single song offers common and relevant data that the average user would care about. The provided fields, namely _Title_, _Album_, _Artist_, _Composer_, _Genre_, _Track_, _Disc_ and _Year_, are all editable. Apart from this the media-art associated with the song is also displayed. Clicking this cover will open up another dialog that allows file selection (only image types) that will now be used as the cover art for that song, replacing the old one.
 
-![GNOME Music: tag editor dialog](/images/posts/scr31.png) The tag editor dialog allows common tags to be edited
+<p class="image bordered">
+  <img alt="GNOME Music: tag editor dialog" src="/images/posts/scr31.png">
+  The tag editor dialog allows common tags to be edited
+</p>
 
-![GNOME Music: tag editoy dialog fields](/images/posts/scr41.png) Edited entries are written as soon as 'Enter' is pressed or when entry loses focus
+<p class="image bordered">
+  <img alt="GNOME Music: tag editoy dialog fields" src="/images/posts/scr41.png">
+  Edited entries are written as soon as 'Enter' is pressed or when entry loses focus
+</p>
 
 Each edit is physically stored into the music file as well as updated in the database. This part is taken care of by the tracker-writeback daemon. Once the user is satisfied with all the changes he/she can close the dialog.
 
@@ -45,9 +57,15 @@ Each edit is physically stored into the music file as well as updated in the dat
 
 Any changes made to a song or any music entity, should be reflected in the database as well as the current graphical user interface. Following the close of editor dialog, the player and the different _views_ adjust their contents to accommodate the changes made. The edited song is inserted into the _Songs_ list and the old item is removed. The song is also added to the container provided for the song's album in the _Albums_ view.
 
-![the edited song gets placed where it should](/images/posts/scr51.png) New song entry is inserted into the _Songs_ list
+<p class="image bordered">
+  <img alt="the edited song gets placed where it should" src="/images/posts/scr51.png">
+  New song entry is inserted into the <em>Songs</em> list
+</p>
 
-![edited song placed in the album container](/images/posts/scr71.png) The albums view as well as the album container reflect the changes written
+<p class="image bordered">
+  <img alt="edited song placed in the album container" src="/images/posts/scr71.png">
+  The albums view as well as the album container reflect the changes written
+</p>
 
 Its worth noting that the above UI behavior is subject to change and it will quite possibly if I can find better ways to do things. The manual selection of cover art and an _Undo_ option for immediately edited songs are two other planned features. They're next in my cross-hairs.
 

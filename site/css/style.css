@@ -10,9 +10,6 @@ body {
   flex-direction: column;
   margin: 0 auto;
   max-width: 50em;
-}
-
-body {
   color: #555;
   font-family: "Libre Baskerville", "Georgia", serif;
 }
@@ -31,6 +28,21 @@ footer {
 .main {
   padding-bottom: 4em;
   flex-grow: 1;
+}
+
+.image {
+  padding: 0.5em;
+  font-size: small;
+  text-align: center;
+}
+
+.bordered {
+  border: 1px solid #888;
+  border-radius: 0.5em;
+}
+
+img {
+  max-width: 100%;
 }
 
 a {
