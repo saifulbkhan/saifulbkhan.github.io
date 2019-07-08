@@ -59,6 +59,24 @@ footer {
   margin-right: 0.5em;
 }
 
+.post-item {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5em 0;
+}
+
+.post-item a {
+  text-decoration: none;
+  padding-bottom: 2px;
+  border-bottom: 1px solid #888;
+}
+
+.post-item p {
+  font-size: smaller;
+  padding-top: 2px;
+  margin: 0;
+}
+
 .image {
   padding: 0.5em;
   font-size: small;
