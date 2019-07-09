@@ -8,5 +8,9 @@ draft: false
 Hello, I'm Saiful. This is my blog. I write here like no one is reading, except
 maybe when a post might be of use to others.
 
-Feel free to contact me about anything you might want to discuss, based on what
-you find on this website. I will try my best to engage.
+Feel free to [drop a mail](mailto:saifulbkhan@gmail.com) about anything you
+might want to discuss, based on what you find on this website. I will try my
+best to engage.
+
+I am _saifulbkhan_ on [GitHub](https://github.com/saifulbkhan) and
+[Twitter](https://twitter.com/saifulbkhan).
