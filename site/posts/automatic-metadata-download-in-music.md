@@ -4,10 +4,9 @@ comments: true
 date: 2016-07-28 10:21:41+00:00
 title: Automatic metadata download in Music
 wordpress_id: 369
-categories:
-  - GNOME
 tags:
-  - gnome-music
+  - GNOME
+  - GNOME Music
   - GSoC
 ---
 

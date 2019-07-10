@@ -1,7 +1,5 @@
 ---
 author: Saiful B. Khan
-categories:
-  - Others
 title: "Restart"
 date: "2017-09-13T20:30:13+05:30"
 draft: false

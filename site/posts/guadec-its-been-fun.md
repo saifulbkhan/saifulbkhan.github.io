@@ -4,9 +4,8 @@ comments: true
 date: 2016-08-23 20:39:05+00:00
 title: GUADEC... Its been fun.
 wordpress_id: 559
-categories:
-  - GNOME
 tags:
+  - GNOME
   - GUADEC
 ---
 

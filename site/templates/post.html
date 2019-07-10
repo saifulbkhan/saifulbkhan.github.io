@@ -12,24 +12,16 @@
   {{> site/templates/navbar.html }}
   <header class="heading">
     <h1>{{ title }}</h1>
-    <p>Written on {{ date }}
-      {{# hasCategory }}
-        under
-        {{# categories }}
-          <a href="/categories/{{ . }}">{{ . }}</a>
-        {{/ categories }}
-      {{/ hasCategory }}
+    <div class="post-metadata">
+      <p>Created on {{ date }}</p>
       {{# hasTag }}
-        with tags
-        {{# tags }}
-          <a href="/tags/{{ . }}">{{ . }}</a>
-        {{/ tags }}
-        .
+        <p>Tagged with
+          {{# tags }}
+            <a href="/tags/{{ . }}" class="post-tag">#{{ . }}</a>
+          {{/ tags }}
+        </p>
       {{/ hasTag }}
-      {{^ hasTag }}
-        .
-      {{/ hasTag }}
-    </p>
+    </div>
   </header>
   <section class="main">
     <div class="container">

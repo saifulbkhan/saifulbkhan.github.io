@@ -93,20 +93,31 @@ img {
   max-width: 100%;
 }
 
-a {
+a:not(.post-tag) {
   color: #555;
 }
 
-a:hover:not(.sourceLine) {
+a:hover:not(.sourceLine):not(.post-tag) {
   color: #2558ff;
 }
 
-a:visited {
+a:visited:not(.post-tag) {
   color: #777;
 }
 
 a:visited:hover {
   color: #2558ff;
+}
+
+.post-metadata > * {
+  margin: unset;
+  margin-bottom: 0.25em;
+  color: #999;
+}
+
+.post-tag {
+  color: #999;
+  margin-left: 0.25em;
 }
 
 h2 {

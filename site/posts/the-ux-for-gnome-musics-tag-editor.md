@@ -4,10 +4,9 @@ comments: true
 date: 2016-06-08 16:17:34+00:00
 title: The UX for GNOME Music's tag editor
 wordpress_id: 125
-categories:
-  - GNOME
 tags:
-  - gnome-music
+  - GNOME
+  - GNOME Music
   - GSoC
 ---
 

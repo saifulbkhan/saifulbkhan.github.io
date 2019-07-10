@@ -251,11 +251,8 @@ sortByTime posts = sortBy sortFn posts
         Just timeDiff -> compare timeDiff 0.0
 
 -- | Obtains the tags and categories from a Post object.
-tagsAndCategories :: Value -> Parser (Maybe [String], Maybe [String])
-tagsAndCategories = withObject "tuple" $ \o -> do
-  t <- o .: "tags"
-  c <- o .: "categories"
-  return (t, c)
+tagsFromPost :: Value -> Parser (Maybe [String])
+tagsFromPost = withObject "tuple" $ \o -> o .: "tags"
 
 -- | Obtain all the given type of subjects attributed to an entire collection
 -- of posts.
@@ -285,10 +282,9 @@ loadPost (PostFilePath postPath) = do
   let postURL = T.pack . srcToURL $ postPath
       withURL = _Object . at "url" ?~ String postURL
       withSrc = _Object . at "srcPath" ?~ String (T.pack srcPath)
-      maybeTnC = parseMaybe tagsAndCategories postData
-      withTag = assignBool (not . isNothing . fst <$> maybeTnC) "hasTag"
-      withCat = assignBool (not . isNothing . snd <$> maybeTnC) "hasCategory"
-  convert . withSrc . withURL . withTag . withCat $ postData
+      maybeTags = parseMaybe tagsFromPost postData
+      withTag = assignBool (not . isNothing <$> maybeTags) "hasTag"
+  convert . withSrc . withURL . withTag $ postData
   where
     assignBool :: Maybe Bool -> T.Text -> (Value -> Value)
     assignBool (Just x) field = _Object .at field ?~ Bool x
@@ -365,7 +361,8 @@ buildSubject postCache stype out = do
   allPosts <- postNames >>= traverse (postCache . PostFilePath)
   collectionT <- compileTemplate' (templatesDir </> collectionTemplate)
   let subject = takeBaseName out
-      collection = getPostsWithSubject subject allPosts stype
+      allPostsWithSubject = getPostsWithSubject subject allPosts stype
+      collection = (formatPostDate dateFormatFn) <$> allPostsWithSubject
       subjectInfo = CollectionInfo {subject, collection}
       subjectHTML = T.unpack $ substitute collectionT (toJSON subjectInfo)
   writeFile' out subjectHTML

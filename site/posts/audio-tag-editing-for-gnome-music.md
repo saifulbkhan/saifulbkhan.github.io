@@ -5,10 +5,9 @@ date: 2016-05-03 21:56:07+00:00
 excerpt: A look into what I'll be working on this summer.
 title: Audio tag editing for GNOME Music
 wordpress_id: 30
-categories:
-  - GNOME
 tags:
-  - gnome-music
+  - GNOME
+  - GNOME Music
   - GSoC
 ---
 
