@@ -96,7 +96,7 @@ a {
   color: #555;
 }
 
-a:hover {
+a:hover:not(.sourceLine) {
   color: #2558ff;
 }
 
@@ -121,7 +121,7 @@ strong {
 
 code,
 pre {
-  background: #eee;
+  background: #f8f8f8;
 }
 
 code {
