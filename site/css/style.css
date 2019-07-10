@@ -17,6 +17,7 @@ body {
 .heading,
 .main,
 .navbar-container,
+#disqus_thread,
 footer {
   line-height: 1.5;
   padding: 0 1em;
@@ -145,4 +146,8 @@ pre {
 hr {
   border: 2px solid #eee;
   margin: 2rem auto;
+}
+
+#disqus_thread {
+  margin-bottom: 4em;
 }
