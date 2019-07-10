@@ -10,7 +10,7 @@ body {
   flex-direction: column;
   margin: 0 auto;
   max-width: 50em;
-  color: #555;
+  color: #484848;
   font-family: "Libre Baskerville", "Georgia", serif;
 }
 
@@ -103,10 +103,10 @@ img {
 }
 
 a:not(.post-tag) {
-  color: #555;
+  color: #484848;
 }
 
-a:hover:not(.sourceLine):not(.post-tag) {
+a:hover:not(.sourceLine) {
   color: #2558ff;
 }
 
@@ -160,7 +160,7 @@ code {
 
 pre {
   padding: 1em;
-  border-left: 2px solid #69c;
+  border-left: 2px solid #2558ff;
 }
 
 hr {
