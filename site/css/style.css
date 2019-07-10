@@ -14,6 +14,10 @@ body {
   font-family: "Libre Baskerville", "Georgia", serif;
 }
 
+.filler {
+  flex-grow: 1;
+}
+
 .heading,
 .main,
 .navbar-container,
@@ -24,16 +28,17 @@ footer {
 }
 
 .heading {
-  padding-top: 4em;
+  padding-top: 2em;
 }
 
 .main {
-  padding-bottom: 4em;
+  padding-bottom: 2em;
   flex-grow: 1;
 }
 
 .main-navigation,
 .navbar,
+.post-content,
 .copyright-text {
   padding-top: 0.5em;
   padding-bottom: 0.5em;
@@ -78,6 +83,10 @@ footer {
   margin: 0;
 }
 
+.post-content {
+  border-width: 0 0 1px 0;
+}
+
 .image {
   padding: 0.5em;
   font-size: small;
@@ -110,9 +119,9 @@ a:visited:hover {
 }
 
 .post-metadata > * {
-  margin: unset;
-  margin-bottom: 0.25em;
+  margin: 0.125em 0;
   color: #999;
+  font-size: small;
 }
 
 .post-tag {
@@ -155,10 +164,10 @@ pre {
 }
 
 hr {
-  border: 2px solid #eee;
-  margin: 2rem auto;
+  border: 1px solid #eee;
+  margin: 2em auto;
 }
 
 #disqus_thread {
-  margin-bottom: 4em;
+  margin-bottom: 2em;
 }
