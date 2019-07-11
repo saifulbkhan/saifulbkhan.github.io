@@ -46,9 +46,6 @@ miscDirName = "misc"
 tagsDirName :: FilePath
 tagsDirName = "tags"
 
-categoriesDirName :: FilePath
-categoriesDirName = "categories"
-
 postsDir :: FilePath
 postsDir = siteDirName </> postsDirName
 
@@ -94,7 +91,6 @@ main = do
     siteDirName ~> need [ staticDirName
                         , postsDirName
                         , tagsDirName
-                        , categoriesDirName
                         , buildDirName </> indexTemplate
                         , buildDirName </> collectionTemplate
                         , buildDirName </> aboutTemplate
@@ -123,9 +119,6 @@ main = do
      -- Find and require every tag page to be built
     tagsDirName ~> requireSubjects postCache tags tagsDirName
 
-     -- Find and require every category page to be built
-    categoriesDirName ~> requireSubjects postCache categories categoriesDirName
-
     -- build the main landing page
     buildDirName </> indexTemplate %> buildIndex postCache
 
@@ -141,10 +134,6 @@ main = do
 
     -- rule for building required tags
     buildDirName </> tagsDirName ++ "/*.html" %> buildSubject postCache tags
-
-    -- rule for building required categories
-    buildDirName </> categoriesDirName ++ "/*.html" %>
-      buildSubject postCache categories
 
 -- | Represents the template dependencies of the index page
 data IndexInfo =
@@ -180,9 +169,7 @@ data Post =
     , date        :: String
     , copyright   :: Maybe String
     , hasTag      :: Maybe Bool
-    , hasCategory :: Maybe Bool
     , tags        :: Maybe [String]
-    , categories  :: Maybe [String]
     }
   deriving (Generic, Eq, Ord, Show)
 
@@ -259,7 +246,7 @@ sortByTime posts = sortBy sortFn posts
         Nothing -> LT
         Just timeDiff -> compare timeDiff 0.0
 
--- | Obtains the tags and categories from a Post object.
+-- | Obtains the tags from a Post object.
 tagsFromPost :: Value -> Parser (Maybe [String])
 tagsFromPost = withObject "tuple" $ \o -> o .: "tags"
 
