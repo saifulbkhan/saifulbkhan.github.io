@@ -93,9 +93,10 @@ footer {
   text-align: center;
 }
 
+pre,
 .bordered {
   border: 1px solid #888;
-  border-radius: 0.5em;
+  border-radius: 2px;
 }
 
 img {
@@ -107,7 +108,7 @@ a:not(.post-tag) {
 }
 
 a:hover:not(.sourceLine) {
-  color: #2558ff;
+  color: #777;
 }
 
 a:visited:not(.post-tag) {
@@ -115,7 +116,7 @@ a:visited:not(.post-tag) {
 }
 
 a:visited:hover {
-  color: #2558ff;
+  color: #777;
 }
 
 .post-metadata > * {
@@ -159,8 +160,7 @@ code {
 }
 
 pre {
-  padding: 1em;
-  border-left: 2px solid #2558ff;
+  padding: 0.5em;
 }
 
 hr {
