@@ -83,7 +83,8 @@ aboutTemplate :: FilePath
 aboutTemplate = "about.html"
 
 main :: IO ()
-main =
+main = do
+  copyrightString <- getCopyrightString
   shakeArgs shakeOptions {shakeVerbosity = Chatty} $ do
 
   -- Set up caches
@@ -135,7 +136,8 @@ main =
     buildDirName </> aboutTemplate %> buildPage (miscDir </> "about.md")
 
     -- rule for actually building posts
-    buildDirName </> postsDirName ++ "/*.html" %> buildPost postCache
+    buildDirName </> postsDirName ++ "/*.html" %>
+      buildPost postCache copyrightString
 
     -- rule for building required tags
     buildDirName </> tagsDirName ++ "/*.html" %> buildSubject postCache tags
@@ -176,6 +178,7 @@ data Post =
     , content     :: String
     , url         :: String
     , date        :: String
+    , copyright   :: Maybe String
     , hasTag      :: Maybe Bool
     , hasCategory :: Maybe Bool
     , tags        :: Maybe [String]
@@ -238,6 +241,12 @@ formatPostDate :: (UTCTime -> String) -> Post -> Post
 formatPostDate fn p = case stringToDate (date p) of
   Nothing -> p
   Just utc -> p { date = fn utc }
+
+-- | Creates a copyright string usable at this point in time
+getCopyrightString :: IO String
+getCopyrightString = do
+  (year, month, day) <- getCurrentTime >>= return . toGregorian . utctDay
+  return $ "© 2016 - " ++ (show year) ++ " Saiful Bari Khan"
 
 -- | Sorts a list of posts by the date on which they were written (ascending).
 sortByTime :: [Post] -> [Post]
@@ -343,11 +352,12 @@ requirePosts = do
   need ((\p -> srcToDest p -<.> "html") <$> pNames)
 
 -- | Build an html file for a given post given a cache of posts.
-buildPost :: (PostFilePath -> Action Post) -> FilePath -> Action ()
-buildPost postCache out = do
+buildPost :: (PostFilePath -> Action Post) -> String -> FilePath -> Action ()
+buildPost postCache copyrightString out = do
   let srcPath = destToSrc out -<.> "md"
       postURL = srcToURL srcPath
-  post <- postCache (PostFilePath srcPath)
+  loadedPost <- postCache (PostFilePath srcPath)
+  let post = loadedPost {copyright = Just copyrightString}
   template <- compileTemplate' (templatesDir </> postTemplate)
   writeFile' out . T.unpack $
     substitute template (toJSON . formatPostDate dateTimeFormatFn $ post)
