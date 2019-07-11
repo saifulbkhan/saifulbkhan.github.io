@@ -1,6 +1,6 @@
 name:                blog
 version:             0.1.0.0
-github:              "saifulbkhan/blog"
+github:              "saifulbkhan/saifulbkhan.github.io"
 license:             BSD3
 author:              "Saiful B. Khan"
 maintainer:          "saifulbkhan@gmail.com"
@@ -20,12 +20,13 @@ description:         Blog generator and source files
 
 executables:
   blog:
-    main:                Main.hs
+    main:                Blog.hs
     source-dirs:         app
     ghc-options:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    - -Wall
     dependencies:
     - base >= 4.7 && < 5
     - shake

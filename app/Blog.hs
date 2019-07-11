@@ -10,13 +10,9 @@ import           Data.Aeson                 as A
 import           Data.Aeson.Lens
 import           Data.Aeson.Types           (Parser, parseMaybe)
 import           Data.Maybe                 (isNothing)
-import           Data.Function              (on)
 import           Data.List                  (sortBy, take)
-import           Data.Map                   as M
-import           Data.Monoid
 import           Data.Set                   as S
 import qualified Data.Text                  as T
-import           Data.Text.Lens
 import           Data.Time
 import           Development.Shake
 import           Development.Shake.Classes
@@ -227,12 +223,12 @@ dateTimeFormatFn = formatTime defaultTimeLocale "%I:%M %p, %d %b %Y (%Z)"
 formatPostDate :: (UTCTime -> String) -> Post -> Post
 formatPostDate fn p = case stringToDate (date p) of
   Nothing -> p
-  Just utc -> p { date = fn utc }
+  Just utct -> p { date = fn utct }
 
 -- | Creates a copyright string usable at this point in time
 getCopyrightString :: IO String
 getCopyrightString = do
-  (year, month, day) <- getCurrentTime >>= return . toGregorian . utctDay
+  (year, _, _) <- getCurrentTime >>= return . toGregorian . utctDay
   return $ "© 2016 - " ++ (show year) ++ " Saiful Bari Khan"
 
 -- | Sorts a list of posts by the date on which they were written (ascending).
@@ -342,7 +338,6 @@ requirePosts = do
 buildPost :: (PostFilePath -> Action Post) -> String -> FilePath -> Action ()
 buildPost postCache copyrightString out = do
   let srcPath = destToSrc out -<.> "md"
-      postURL = srcToURL srcPath
   loadedPost <- postCache (PostFilePath srcPath)
   let post = loadedPost {copyright = Just copyrightString}
   template <- compileTemplate' (templatesDir </> postTemplate)
