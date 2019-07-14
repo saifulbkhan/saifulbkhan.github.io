@@ -20,8 +20,8 @@ description:         Blog generator and source files
 
 executables:
   blog:
-    main:                Blog.hs
-    source-dirs:         app
+    main:                Main.hs
+    source-dirs:         generateblog
     ghc-options:
     - -threaded
     - -rtsopts
@@ -41,3 +41,21 @@ executables:
     - containers
     - mustache
     - time
+  create-post:
+    main:                Main.hs
+    source-dirs:         createpost
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    - -Wall
+    dependencies:
+    - base >= 4.7 && < 5
+    - aeson
+    - yaml
+    - text
+    - bytestring
+    - containers
+    - time
+    - filepath
+    - utf8-string
