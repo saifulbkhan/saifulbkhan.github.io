@@ -3,6 +3,7 @@
 {-# LANGUAGE NamedFieldPuns             #-}
 {-# LANGUAGE OverloadedStrings          #-}
 {-# LANGUAGE RecordWildCards            #-}
+{-# LANGUAGE DuplicateRecordFields      #-}
 
 module Main where
 import           Control.Lens
@@ -116,20 +117,24 @@ main = do
     tagsDirName ~> requireSubjects postCache tags tagsDirName
 
     -- build the main landing page
-    buildDirName </> indexTemplate %> buildIndex postCache
+    buildDirName </> indexTemplate %>
+      buildIndex postCache
 
     -- build the blog archive
-    buildDirName </> collectionTemplate %> buildArchive postCache
+    buildDirName </> collectionTemplate %>
+      buildArchive postCache copyrightString
 
     -- build the about page
-    buildDirName </> aboutTemplate %> buildPage (miscDir </> "about.md")
+    buildDirName </> aboutTemplate %> 
+      buildPage (miscDir </> "about.md")
 
     -- rule for actually building posts
     buildDirName </> postsDirName ++ "/*.html" %>
       buildPost postCache copyrightString
 
     -- rule for building required tags
-    buildDirName </> tagsDirName ++ "/*.html" %> buildSubject postCache tags
+    buildDirName </> tagsDirName ++ "/*.html" %>
+      buildSubject postCache tags copyrightString
 
 -- | Represents the template dependencies of the index page
 data IndexInfo =
@@ -148,6 +153,7 @@ data CollectionInfo =
   CollectionInfo
     { subject    :: String
     , collection :: [Post]
+    , copyright  :: String
     }
   deriving (Generic, Show)
 
@@ -294,14 +300,14 @@ buildIndex postCache out = do
   writeFile' out indexHTML
 
 -- | given a cache of posts this will create a blog archive
-buildArchive :: (PostFilePath -> Action Post) -> FilePath -> Action ()
-buildArchive postCache out = do
+buildArchive :: (PostFilePath -> Action Post) -> String -> FilePath -> Action ()
+buildArchive postCache copyright out = do
   allPosts <- postNames >>= traverse (postCache . PostFilePath)
   archiveT <- compileTemplate' (templatesDir </> collectionTemplate)
   let subject = "Archive"
       sorted = reverse . sortByTime $ allPosts
       collection = (formatPostDate dateFormatFn) <$> sorted
-      archiveInfo = CollectionInfo {subject, collection}
+      archiveInfo = CollectionInfo {subject, collection, copyright}
       archiveHTML = T.unpack $ substitute archiveT (toJSON archiveInfo)
   writeFile' out archiveHTML
 
@@ -339,7 +345,7 @@ buildPost :: (PostFilePath -> Action Post) -> String -> FilePath -> Action ()
 buildPost postCache copyrightString out = do
   let srcPath = destToSrc out -<.> "md"
   loadedPost <- postCache (PostFilePath srcPath)
-  let post = loadedPost {copyright = Just copyrightString}
+  let post = loadedPost {copyright = Just copyrightString} :: Post
   template <- compileTemplate' (templatesDir </> postTemplate)
   writeFile' out . T.unpack $
     substitute template (toJSON . formatPostDate dateTimeFormatFn $ post)
@@ -347,14 +353,15 @@ buildPost postCache copyrightString out = do
 -- | Build an html file for a given subject given a cache of posts.
 buildSubject :: (PostFilePath -> Action Post)
              -> (Post -> Maybe [String])
+             -> String
              -> FilePath
              -> Action ()
-buildSubject postCache stype out = do
+buildSubject postCache stype copyright out = do
   allPosts <- postNames >>= traverse (postCache . PostFilePath)
   collectionT <- compileTemplate' (templatesDir </> collectionTemplate)
   let subject = takeBaseName out
       allPostsWithSubject = getPostsWithSubject subject allPosts stype
       collection = (formatPostDate dateFormatFn) <$> allPostsWithSubject
-      subjectInfo = CollectionInfo {subject, collection}
+      subjectInfo = CollectionInfo {subject, collection, copyright}
       subjectHTML = T.unpack $ substitute collectionT (toJSON subjectInfo)
   writeFile' out subjectHTML
