@@ -29,3 +29,14 @@ script:
 # Build the tool which then generates the blog
 - stack --no-terminal build
 - stack exec blog site
+
+deploy:
+  # Push the built website resources to gh-pages
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN
+  target_branch: gh-pages
+  local_dir: dist
+  verbose: true
+  on:
+    branch: master
