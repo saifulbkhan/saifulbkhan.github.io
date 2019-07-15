@@ -26,5 +26,6 @@ install:
 - stack --no-terminal --install-ghc test --only-dependencies
 
 script:
-# Build the package, its tests, and its docs and run the tests
+# Build the tool which then generates the blog
 - stack --no-terminal build
+- stack exec blog site
