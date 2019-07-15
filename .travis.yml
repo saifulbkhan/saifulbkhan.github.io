@@ -1,6 +1,11 @@
 # Choose a build environment
 dist: xenial
 
+# safelist
+branches:
+  only:
+  - source
+
 # Do not choose a language; we provide our own build tools.
 language: generic
 
@@ -35,8 +40,8 @@ deploy:
   provider: pages
   skip_cleanup: true
   github_token: $GITHUB_TOKEN
-  target_branch: gh-pages
+  target_branch: master
   local_dir: dist
   verbose: true
   on:
-    branch: master
+    branch: source
