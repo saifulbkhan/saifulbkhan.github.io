@@ -74,7 +74,7 @@ modifyForArg :: String -> [String] -> PostFile -> PostFile
 modifyForArg "-t" ts post = addTags ts post
 modifyForArg "--tags" ts post = addTags ts post
 modifyForArg "-n" [t] post = addTitle t post
-modifyForArg "--name" [t] post = addTitle t post
+modifyForArg "--title" [t] post = addTitle t post
 modifyForArg "-a" [a] post = addAuthor a post
 modifyForArg "--author" [a] post = addAuthor a post
 modifyForArg _ _ post = post

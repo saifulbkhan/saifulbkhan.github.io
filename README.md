@@ -14,10 +14,21 @@ stack build
 ```
 
 This will build the site generator executable using the main script (located in
-[Main.hs](app/Main.hs)). Once you have the executable built successfully, run:
+[Main.hs](app/Main.hs)) as well as an executable to generate a blog file with
+appropriate yaml filled in. To create a new post, run:
 
 ```
-stack exec blog-exe site
+stack exec create-post -- --title <name of your post> --tags <first-tag> <second-tag> --author <You Name>
+```
+
+This should create a new .md file in the `site/posts` directory. The name of
+the file is just the title that you added in a lowercased and hyphentated form.
+
+Once you have edited and saved your markdown. Run the site generating
+executable:
+
+```
+stack exec blog site
 ```
 
 If the command successfully buids your website, you should see a _dist_ folder
