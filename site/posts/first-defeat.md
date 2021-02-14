@@ -5,7 +5,7 @@ title: First defeat
 tags:
 - software
 - business
-- idea
+- ideas
 ---
 I had been reserching on this idea -- a visual workflow builder and dashboard generator. Unlike what they have been making at my company, this experience would have been much more interactive at each component's input/output level.
 
