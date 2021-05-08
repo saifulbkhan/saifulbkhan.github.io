@@ -1,0 +1,173 @@
+@import '/fonts/libre-baskerville/libre-baskerville.css';
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  max-width: 50em;
+  color: #484848;
+  font-family: "Libre Baskerville", "Georgia", serif;
+}
+
+.filler {
+  flex-grow: 1;
+}
+
+.heading,
+.main,
+.navbar-container,
+#disqus_thread,
+footer {
+  line-height: 1.5;
+  padding: 0 1em;
+}
+
+.heading {
+  padding-top: 2em;
+}
+
+.main {
+  padding-bottom: 2em;
+  flex-grow: 1;
+}
+
+.main-navigation,
+.navbar,
+.post-content,
+.copyright-text {
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  margin: 0;
+  border-style: solid;
+  border-color: #888;
+}
+
+.main-navigation  {
+  border-width: 1px 0;
+}
+
+.navbar {
+  border-width: 0 0 1px 0;
+}
+
+.copyright-text {
+  border-width: 1px 0 0 0;
+}
+
+.main-navigation > *,
+.navbar > * {
+  text-decoration: none;
+  margin-right: 0.5em;
+}
+
+.post-item {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5em 0;
+}
+
+.post-item a {
+  text-decoration: none;
+  padding-bottom: 2px;
+  border-bottom: 1px solid #888;
+}
+
+.post-item p {
+  font-size: smaller;
+  padding-top: 2px;
+  margin: 0;
+}
+
+.post-content {
+  border-width: 0 0 1px 0;
+}
+
+.image {
+  padding: 0.5em;
+  font-size: small;
+  text-align: center;
+}
+
+pre,
+.bordered {
+  border: 1px solid #888;
+  border-radius: 2px;
+}
+
+img {
+  max-width: 100%;
+}
+
+a:not(.post-tag) {
+  color: #484848;
+}
+
+a:hover:not(.sourceLine) {
+  color: #777;
+}
+
+a:visited:not(.post-tag) {
+  color: #777;
+}
+
+a:visited:hover {
+  color: #777;
+}
+
+.post-metadata > * {
+  margin: 0.125em 0;
+  color: #999;
+  font-size: small;
+}
+
+.post-tag {
+  color: #999;
+  margin-left: 0.25em;
+}
+
+h2 {
+  margin-top: 1em;
+  padding-top: 1em;
+}
+
+h3 {
+  padding-top: 0.75em;
+}
+
+h4 {
+  padding-top: 0.5em;
+}
+
+h1,
+h2,
+strong {
+  color: #333;
+}
+
+code,
+pre {
+  background: #fafafa;
+}
+
+code {
+  padding: 2px 4px;
+  vertical-align: text-bottom;
+}
+
+pre {
+  padding: 0.5em;
+}
+
+hr {
+  border: 1px solid #eee;
+  margin: 2em auto;
+}
+
+#disqus_thread {
+  margin-bottom: 2em;
+}

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head profile="http://www.w3.org/2005/10/profile">
+    <meta charset="UTF-8">
+    <meta name="author" content="Saiful B. Khan">
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="referrer" content="no-referrer">
+    <link rel="icon" type="image/png" href="/images/favicon.png">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/syntax.css">
+    <script src="/js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>  <meta name="description" content="Saiful B. Khan">
+  <title>The UX for GNOME Music&#39;s tag editor</title>
+</head>
+
+<body>
+    <div class="navbar-container">
+      <div class="navbar">
+        <a href="/index">Home</a>
+        <a href="/about">About</a>
+        <a href="/posts">Archive</a>
+      </div>
+    </div>
+  <header class="heading">
+    <h1>The UX for GNOME Music&#39;s tag editor</h1>
+    <div class="post-metadata">
+      <p>Created on 04:17 PM, 08 Jun 2016 (UTC)</p>
+        <p>Tagged with
+            <a href="/tags/GNOME" class="post-tag">#GNOME</a>
+            <a href="/tags/GNOME Music" class="post-tag">#GNOME Music</a>
+            <a href="/tags/GSoC" class="post-tag">#GSoC</a>
+        </p>
+    </div>
+  </header>
+  <section class="main">
+    <div class="container">
+      <div class="post-content">
+        <p>Its the second week of GSoC 2016.  The development of a functional UI editor dialog is in progress. The editor at first should be able to allow the user to edit common tags ('title', 'album', 'artist', etc.) for a single song. If done properly it would pave a way to implement automatic tag suggestions and extensions for editing multiple songs (related or not) at once through the dialog.</p>
+<!-- more -->
+<p>Here's a demonstration of how the user would go about from one of the Views in GNOME Music to edit a single song:</p>
+<h3 id="selecting-a-song">Selecting a song</h3>
+<p>A song needs to be first selected if it is to be edited. This can be done through the <em>Songs</em> view or the <em>AlbumWidget</em> for a particular album. When the user selects a (single) song from one of these places, the <em>actionbar</em> reveals itself which now offers an '<strong>Edit Details'</strong> button along with one of the playlist management buttons.</p>
+<p class="image bordered">
+  <img alt="GNOME Music: selecting songs in 'Songs' view" src="/images/posts/scr11.png">
+  Selecting songs from 'Songs' view
+</p>
+<p class="image bordered">
+  <img alt="GNOME Music: selecting songs from an album" src="/images/posts/scr21.png">
+  Selecting songs from an album
+</p>
+<p>If the user chooses to <em>Edit Details</em> of the selected song, the editor dialog is brought up.</p>
+<h3 id="the-tag-editor-dialog">The tag editor dialog</h3>
+<p>The editor responsible managing details of a single song offers common and relevant data that the average user would care about. The provided fields, namely <em>Title</em>, <em>Album</em>, <em>Artist</em>, <em>Composer</em>, <em>Genre</em>, <em>Track</em>, <em>Disc</em> and <em>Year</em>, are all editable. Apart from this the media-art associated with the song is also displayed. Clicking this cover will open up another dialog that allows file selection (only image types) that will now be used as the cover art for that song, replacing the old one.</p>
+<p class="image bordered">
+  <img alt="GNOME Music: tag editor dialog" src="/images/posts/scr31.png">
+  The tag editor dialog allows common tags to be edited
+</p>
+<p class="image bordered">
+  <img alt="GNOME Music: tag editoy dialog fields" src="/images/posts/scr41.png">
+  Edited entries are written as soon as 'Enter' is pressed or when entry loses focus
+</p>
+<p>Each edit is physically stored into the music file as well as updated in the database. This part is taken care of by the tracker-writeback daemon. Once the user is satisfied with all the changes he/she can close the dialog.</p>
+<h3 id="player-accommodates-to-changes">Player accommodates to changes</h3>
+<p>Any changes made to a song or any music entity, should be reflected in the database as well as the current graphical user interface. Following the close of editor dialog, the player and the different <em>views</em> adjust their contents to accommodate the changes made. The edited song is inserted into the <em>Songs</em> list and the old item is removed. The song is also added to the container provided for the song's album in the <em>Albums</em> view.</p>
+<p class="image bordered">
+  <img alt="the edited song gets placed where it should" src="/images/posts/scr51.png">
+  New song entry is inserted into the <em>Songs</em> list
+</p>
+<p class="image bordered">
+  <img alt="edited song placed in the album container" src="/images/posts/scr71.png">
+  The albums view as well as the album container reflect the changes written
+</p>
+<p>Its worth noting that the above UI behavior is subject to change and it will quite possibly if I can find better ways to do things. The manual selection of cover art and an <em>Undo</em> option for immediately edited songs are two other planned features. They're next in my cross-hairs.</p>
+<h3 id="long-road-ahead">Long road ahead...</h3>
+<p>There are still a few bugs and defects lurking about, that keep the UI from behaving as it should ideally. I'll be working on them pretty soon, once I implement a functional dialog for manual edits to its full extent (like storing cover-art and and the <em>undo</em> option, both features I didn't cover in this post). In fact my 'bugs-to-solve' list keeps growing  by the day. But I suppose that's unavoidable when you're developing software.</p>
+<p>Thanks for reading and your thoughts are welcome!  :)</p>
+      </div>
+    </div>
+  </section>
+    <div id="disqus_thread"></div>
+    <script>
+      /**
+       * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION
+       * BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+       * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT:
+       * https://disqus.com/admin/universalcode/#configuration-variables
+       */
+      var disqus_config = function () {
+        // Replace PAGE_URL with your page's canonical URL variable
+        this.page.url = "https://saifulbkhan.github.io/posts/the-ux-for-gnome-musics-tag-editor.html";
+  
+        // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        this.page.identifier = "04:17 PM, 08 Jun 2016 (UTC)";
+      };
+      (function () { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = 'https://saifulbkhan.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+      })();
+    </script>
+    <noscript>Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+    </noscript>    <footer>
+      <p class="copyright-text">© 2016 - 2021 Saiful Bari Khan</p>
+    </footer></body>
+
+</html>

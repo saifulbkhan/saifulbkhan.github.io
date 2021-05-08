@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head profile="http://www.w3.org/2005/10/profile">
+    <meta charset="UTF-8">
+    <meta name="author" content="Saiful B. Khan">
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="referrer" content="no-referrer">
+    <link rel="icon" type="image/png" href="/images/favicon.png">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/syntax.css">
+    <script src="/js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>  <meta name="description" content="Saiful B. Khan">
+  <title>L&#39;s at work</title>
+</head>
+
+<body>
+    <div class="navbar-container">
+      <div class="navbar">
+        <a href="/index">Home</a>
+        <a href="/about">About</a>
+        <a href="/posts">Archive</a>
+      </div>
+    </div>
+  <header class="heading">
+    <h1>L&#39;s at work</h1>
+    <div class="post-metadata">
+      <p>Created on 08:17 AM, 08 May 2021 (UTC)</p>
+        <p>Tagged with
+            <a href="/tags/work" class="post-tag">#work</a>
+            <a href="/tags/software" class="post-tag">#software</a>
+        </p>
+    </div>
+  </header>
+  <section class="main">
+    <div class="container">
+      <div class="post-content">
+        <p>This will be a (growing) record of my mistakes at work and what I learnt from them. Some of the earlier ones are recollections and may not have all the details or accurate descriptions.</p>
+<hr />
+<h3 id="april-2021">April 2021</h3>
+<p><strong>Grew bitter at work</strong>: After a 2 year stint on my first project (which I really liked working on), I was made part of a <em>customer success</em> team. There we would work on short to medium term projects for new clients and collaborators. The work was not strictly related to our main product, but was a way to funnel new leads to get them using it. IT WAS A LOT OF WORK. Not only was I new to the tech stack, the sheer volume of work was insane. I was working on multiple projects and the context-switching was also driving me crazy. Due to the time-zone difference between me and my clients, we often had meetings late at night or early morning. Maybe we were short-staffed or maybe our managers did not understand the investment. To have been moved from a project where I found a lot of fulfillment and a sense of ownership, to being an overworked cog made me <a href="https://saifulbkhan.github.io/posts/work-is-boring.html">think very pessimistic</a> things. On top of that, I had a sense of feeling that my peers were growing more than me because they actually cared about the vision of the company. All this made me extremely bitter and I eventually joined a less stressful team within the company so that I can work no more than was required of me and refused to put any extra effort or thought to contributing to the processes and the culture of the company.</p>
+<p><strong>Lesson</strong>: If you find work to be unfulfilling, talk to your manager about it. If you are still unable to come up with mutually beneficial arrangements, then it is wise to take your leave. Your managers are not evil people who want to make unfair profit off of you. It is their job to help you come up with a growth trajectory for yourself. I did not notice that I felt like a mercenary because that was the outcome I had panned out for myself by not speaking up about what I wanted to do. That said, I think I want to leave now. None of the work particularly excites me.</p>
+<h3 id="october-2020">October 2020</h3>
+<p><strong>Focused too much on a single story at the expense of overall stability</strong>: I eventually became the maintainer and project manager of the project I had been working on for an year. My first major ownership on my first job. I do good work for a whole another year as the lead - lots of praise and suggestions for improvement. In my fourth release as the team lead, I was told that the company had decided on moving the project into "maintenance mode", that it would only receive minor fixes or patches after the current release cycle and that I was to start working on other projects where we actually made money (the project I worked on was an open-source "for the community" kind of thing). It was kind of sad because I really liked working on the software and took pride in being a PoC for something very relevant in the broader community. But the managers also made sense, that it would not have much of a place in the new direction our company was moving in (which is not relevant to the point I am trying to make).</p>
+<p>It took a while to get over this. I never told anyone that I did not want to work on other things just yet. Engineers are not supposed to complain and get shit done. But with all this, I decided I would put my all in this one last sprint. There was a major feature story this time that required lots of reorganization and redesigning some of our core algorithms. I spent two months on just this thing all by myself (at the time I only had one intern working on the project with me, whom I had asked for help with all the other issues). Sleepless night. Long threads and calls with our internal and external users. I broke a lot of rules and finally made it in time. To top it off, I added a new UI theme to the boring old desktop UI (unplanned feature). It looked pretty good. After the release we found out that there were a few not-so-minor issues that made the software buggy for a multiple different kinds analyses that were not the central focus of the user story in this release. This was bad, even though I did not receive much internal flak for it. Later I had to send different patches to different users since a separate patch release had not been planned - I was moved quickly to another team.</p>
+<p><strong>Lesson</strong>: Many things went wrong here. Processes in software development are in place probably because they work, accounting for some amount of irrational human behavior. I should have proposed a longer release timeline. I should have asked our users doing different kinds of analysis to beta test the software. Most importantly, I learned that I was not as good of a "project manager" as I thought. But I had a lot of fun too. I am still proud of my last release of El-MAVEN :)</p>
+<h3 id="june-2019">June 2019</h3>
+<p><strong>Developed a feature branch locally for 5 months without pushing it to remote</strong>: In one release, I added a very nice session save/restore format to our application that would allow scientists (our users) to perform their longer analyses over multiple sessions. They would save their progress in a flat file (which was actually SQLite database) in one session and restore it in the next session to continue from there. We released it. It had lots bugs. While trying to fix them, I thought maybe we should have unit tests and functional tests for this major feature so that any changes that could introduce bugs and regressions in the future would be caught by our CI. Plus it was a good opportunity to introduce the culture of writing tests. We had some tests but nobody wrote them seriously or with any discipline. We were a young team. So I learnt all the concepts and good practices from the boost unit testing library's documentation and started a local dev branch. I wrote lots of tests for all the different classes involved in our session save/restore feature. I even managed to refactor out a good lot of reusable test utilities, in case my teammates would need it for similar exercises in the future. This entire time I did not push the branch to our GitHub even once, thinking I would surprise my team with a complete test suite and be praised for my hard work on this side project. Then one day, I do not know what happened, but somehow some malicious person was remotely able to issue an <code>rm -rf ~</code> command to my computer. I did not realize it until my editor and other applications started behaving strangely, but by then it was too late. My local copy of the repo (with all my dev branches) was nuked. It occurred to me later that for some other thing I was doing, I had enabled remote access to my machine and had forgot about it until this unfortunate event. This event hurt so much, I did not attempt to write new tests for my remaining tenure on this project, but rather helped others do it.</p>
+<p><strong>Lesson</strong>: Always back up any valuable work to your remote, as often as you can - there is no cost to doing this. Also, be extremely careful about opening up remote access to any work machine. People can be naughtier than you like to believe.</p>
+<h3 id="december-2018">December 2018</h3>
+<p><strong>Needlessly upgraded the OS and library versions of our deployment system</strong>: We had this one computer in the office which we would use to create installers every time we tagged a new version of our desktop application. I was given this responsibility once and for some unimportant reason (that I cannot recall), I upgraded macOS, LLVM and boost libraries to their latest versions on the computer before attempting to build the installer. The build system broke. After a few hours of brain-wracking, we made it functional again. But then the installer that we got this time would not run on any older versions of macOS, which would certainly annoy some of our users. Plus we could not downgrade the macOS in any officially supported way. All in all, I caused much headache and time waste for my team wastes.</p>
+<p><strong>Lesson</strong>: Do not upgrade your libraries or build environments without knowing its consequences. Your team probably has valid reasons for choosing and sticking to the current build setup. Also use automated CI/CD services to avoid having to do this manually, make your builds more reproducible and transparent if your project is open-source (which it was in our case).</p>
+      </div>
+    </div>
+  </section>
+    <div id="disqus_thread"></div>
+    <script>
+      /**
+       * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION
+       * BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+       * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT:
+       * https://disqus.com/admin/universalcode/#configuration-variables
+       */
+      var disqus_config = function () {
+        // Replace PAGE_URL with your page's canonical URL variable
+        this.page.url = "https://saifulbkhan.github.io/posts/l&#39;s-at-work.html";
+  
+        // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        this.page.identifier = "08:17 AM, 08 May 2021 (UTC)";
+      };
+      (function () { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = 'https://saifulbkhan.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+      })();
+    </script>
+    <noscript>Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+    </noscript>    <footer>
+      <p class="copyright-text">© 2016 - 2021 Saiful Bari Khan</p>
+    </footer></body>
+
+</html>

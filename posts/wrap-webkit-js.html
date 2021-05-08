@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head profile="http://www.w3.org/2005/10/profile">
+    <meta charset="UTF-8">
+    <meta name="author" content="Saiful B. Khan">
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="referrer" content="no-referrer">
+    <link rel="icon" type="image/png" href="/images/favicon.png">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/syntax.css">
+    <script src="/js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>  <meta name="description" content="Saiful B. Khan">
+  <title>Wrapping Webkit&#39;s Javascript call API</title>
+</head>
+
+<body>
+    <div class="navbar-container">
+      <div class="navbar">
+        <a href="/index">Home</a>
+        <a href="/about">About</a>
+        <a href="/posts">Archive</a>
+      </div>
+    </div>
+  <header class="heading">
+    <h1>Wrapping Webkit&#39;s Javascript call API</h1>
+    <div class="post-metadata">
+      <p>Created on 04:17 PM, 30 Sep 2017 (UTC)</p>
+        <p>Tagged with
+            <a href="/tags/GNOME" class="post-tag">#GNOME</a>
+            <a href="/tags/WebKit" class="post-tag">#WebKit</a>
+            <a href="/tags/gobject-introspection" class="post-tag">#gobject-introspection</a>
+        </p>
+    </div>
+  </header>
+  <section class="main">
+    <div class="container">
+      <div class="post-content">
+        <p>WebKitGTK+ allows embedding a fully-featured web engine in GTK+ applications, and you probably would not find a better option if you want to support any kind of browser-like capabilities in the app. It even allows running javascript in context of the web page being rendered by a <a href="https://webkitgtk.org/reference/webkit2gtk/stable/WebKitWebView.html">WebKit WebView</a>. This post is about some trouble I ran into while trying to call javascript from a webview and how I went about solving it.</p>
+<p>TL;DR - I wrote an introspectable API.</p>
+<h4 id="the-problem">The Problem</h4>
+<p>The operation of executing and returning the result is asynchronous in WebKit (and rightly so!). Extracting the result out of the <code>WebKitJavascriptResult</code> object involves fetching references to other objects, namely <code>JavaScriptCore .GlobalContext</code> and <code>JavaScriptCore.Value</code>. Since the JavaScriptCore library, which is written in C++, exposes an interface to call upon and interact with these objects, the whole process of running and reading results becomes quite easy through GObject C, as <a href="https://webkitgtk.org/reference/webkit2gtk/stable/WebKitWebView.html#webkit-web-view-run-javascript-finish">illustrated in the WebKitGTK+ docs</a>.</p>
+<p>However, I wanted to make these execution calls using PyGObject (for an app I'm writing) and found out it was not possible because the module <code>gi.repository.JavaScriptCore</code> contains only opaque definitions for the <code>GlobalContext</code> and <code>Value</code> types, both of which are needed to extract any form of meaningful data from the result of an async call. Try fetching one of these from a WebKitJavascriptResult and you get an exception:</p>
+<pre class="text"><code>TypeError: Couldn&#39;t find foreign struct converter for &#39;JavaScriptCore.GlobalContext&#39;</code></pre>
+<p>Even so, I do not think this was an oversight. PyGObject does cover as much of the API as it was intended to. Supporting types for a library (JavaScriptCore) external to WebKitGTK+ just for the convenience of one method seems unfair. Though I would have really liked if we did not have to deal with these 'external' objects altogether. But, I suppose things are the way they are for a reason, even though I fail to get the big picture. Nonetheless, a solution was needed.</p>
+<h4 id="the-solution">The Solution</h4>
+<p>I tried looking around the web for a quick fix, but I found none. I came after a <a href="https://github.com/sumary/pyjavascriptcore">library</a> written for an outdated version of WebKit and was huge enough to prevent me from attempting to bring it up to date. I tried using everything from <code>ctypes</code> module to Cython to directly call C code or at least wrap it but could not get it to work. I do think its still possible to do this using Cython but I conceded defeat after a few MemoryErrors (bad hacking on my part). <a href="https://stackoverflow.com/a/38041497/6547160">This answer</a> on SO finally inspired me to write my own introspectable C API.</p>
+<p>I wrote libwkjscore which provides just about enough utility to retrieve most basic types of data from <code>WebKitJavascriptResult</code> objects. Its written in C so that GIR and typelib files can easily be generated for use in other languages. It allows declaring a <code>WkJsCoreResult</code> object which acts as a more handy proxy for the particular <code>WebKitJavascriptResult</code> object that is passed to its constructor. From this object one can ask for its result type and issue one of the result processing functions to get its value either as a boolean, a number or a string. For Javascript objects that do not fall in these categories we can stringify them if possible.</p>
+<p>Once library is built, along with GIR and typelib files, and installed (using <a href="mesonbuild.com">Meson</a> for all this), we can import it in a language that has GObject introspection bindings for it. I have only used it in Python for now but it should work in GJS and Vala in a similar manner. Here's a toy demo (hope I'm not being too pedantic):</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb2-1" title="1"><span class="im">import</span> gi</a>
+<a class="sourceLine" id="cb2-2" title="2">gi.require_version(<span class="st">&#39;Gtk&#39;</span>, <span class="st">&#39;3.0&#39;</span>)</a>
+<a class="sourceLine" id="cb2-3" title="3">gi.require_version(<span class="st">&#39;WebKit2&#39;</span>, <span class="st">&#39;4.0&#39;</span>)</a>
+<a class="sourceLine" id="cb2-4" title="4">gi.require_version(<span class="st">&#39;WkJsCore&#39;</span>, <span class="st">&#39;0.1&#39;</span>)</a>
+<a class="sourceLine" id="cb2-5" title="5"></a>
+<a class="sourceLine" id="cb2-6" title="6"><span class="im">from</span> gi.repository <span class="im">import</span> Gtk, WebKit2 <span class="im">as</span> WebKit, WkJsCore</a></code></pre></div>
+<p>The above boilerplate is to make sure that the correct version of each of those libraries are imported. Next we write a function in which we create a scrolled window within a <code>GtkWindow</code> and connect some signals.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">def</span> create_window():</a>
+<a class="sourceLine" id="cb3-2" title="2">    window <span class="op">=</span> Gtk.Window()</a>
+<a class="sourceLine" id="cb3-3" title="3">    window.set_default_size(<span class="dv">250</span>, <span class="dv">100</span>)</a>
+<a class="sourceLine" id="cb3-4" title="4">    window.<span class="ex">connect</span>(<span class="st">&#39;delete-event&#39;</span>, Gtk.main_quit)</a>
+<a class="sourceLine" id="cb3-5" title="5"></a>
+<a class="sourceLine" id="cb3-6" title="6">    <span class="co"># Create webview and connect callback to</span></a>
+<a class="sourceLine" id="cb3-7" title="7">    <span class="co"># any kind content load change signal</span></a>
+<a class="sourceLine" id="cb3-8" title="8">    webview <span class="op">=</span> WebKit.WebView()</a>
+<a class="sourceLine" id="cb3-9" title="9">    webview.<span class="ex">connect</span>(<span class="st">&quot;load_changed&quot;</span>, load_change_cb)</a>
+<a class="sourceLine" id="cb3-10" title="10">    webview.load_html(<span class="st">&#39;&lt;p id=&quot;para&quot;&gt;Lorem ipsum&lt;/p&gt;&#39;</span>)</a>
+<a class="sourceLine" id="cb3-11" title="11"></a>
+<a class="sourceLine" id="cb3-12" title="12">    <span class="co"># Need a scrollable container for a proper webview	</span></a>
+<a class="sourceLine" id="cb3-13" title="13">    scrolled <span class="op">=</span> Gtk.ScrolledWindow(hadjustment<span class="op">=</span><span class="va">None</span>, vadjustment<span class="op">=</span><span class="va">None</span>)</a>
+<a class="sourceLine" id="cb3-14" title="14">    scrolled.add(webview)</a>
+<a class="sourceLine" id="cb3-15" title="15"></a>
+<a class="sourceLine" id="cb3-16" title="16">    window.add(scrolled)</a>
+<a class="sourceLine" id="cb3-17" title="17">    <span class="cf">return</span> window</a>
+<a class="sourceLine" id="cb3-18" title="18"></a>
+<a class="sourceLine" id="cb3-19" title="19"><span class="kw">def</span> load_change_cb(webview, load_event):</a>
+<a class="sourceLine" id="cb3-20" title="20">    <span class="co"># This is the event when any kind of content loading</span></a>
+<a class="sourceLine" id="cb3-21" title="21">    <span class="co"># has just finished. That&#39;s HTML in our case.</span></a>
+<a class="sourceLine" id="cb3-22" title="22">    <span class="cf">if</span> load_event <span class="op">==</span> WebKit.LoadEvent.FINISHED:</a>
+<a class="sourceLine" id="cb3-23" title="23">        <span class="co"># Get HTML inside element with id = &#39;para&#39;</span></a>
+<a class="sourceLine" id="cb3-24" title="24">        script <span class="op">=</span> <span class="st">&#39;document.getElementById(&quot;para&quot;).innerHTML&#39;</span></a>
+<a class="sourceLine" id="cb3-25" title="25">        webview.run_javascript(script, <span class="va">None</span>, js_finished_cb, <span class="va">None</span>)</a></code></pre></div>
+<p>Anybody who has written an application using WebKit, the above code may seem familiar. We are setting up a GtkWindow with webview, loading some HTML (raw or from a URI), and then doing something once the content has loaded. In this case we are calling Javascript on the loaded content. When webview has finished executing our JS code, it calls the callback function <code>js_finished_cb</code> and passing along the <code>GAsyncResult</code> from the completed operation. Running <code>webview.run_javascript_finish()</code> function on this result will give us a <code>WebKitJavascriptResult</code> object. But we won't be able to proceed any further in obtaining the <em>actual</em> result from our JS code, at least not from PyGObject. This is where <code>WkJsCoreResult</code> can help:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">def</span> js_finished_cb(webview, result, user_data):</a>
+<a class="sourceLine" id="cb4-2" title="2">    js_result <span class="op">=</span> webview.run_javascript_finish(result)</a>
+<a class="sourceLine" id="cb4-3" title="3"></a>
+<a class="sourceLine" id="cb4-4" title="4">    <span class="co"># Create a WkJsCore.Result proxy for js_result</span></a>
+<a class="sourceLine" id="cb4-5" title="5">    result_proxy <span class="op">=</span> WkJsCore.Result(jsresult<span class="op">=</span>js_result)</a>
+<a class="sourceLine" id="cb4-6" title="6"></a>
+<a class="sourceLine" id="cb4-7" title="7">    <span class="co"># The result is supposed to be a string...</span></a>
+<a class="sourceLine" id="cb4-8" title="8">    <span class="cf">assert</span> result_proxy,get_result_type() <span class="op">==</span> WkJsCore.Type.STRING</a>
+<a class="sourceLine" id="cb4-9" title="9"></a>
+<a class="sourceLine" id="cb4-10" title="10">    <span class="co"># Fetch the result using appropriate process method</span></a>
+<a class="sourceLine" id="cb4-11" title="11">    <span class="co"># for the type you want i.e., string in this case</span></a>
+<a class="sourceLine" id="cb4-12" title="12">    html_string <span class="op">=</span> result_proxy.process_result_as_string()</a>
+<a class="sourceLine" id="cb4-13" title="13">    <span class="bu">print</span>(html_string)</a></code></pre></div>
+<p>That was simple enough right? You pass a <code>WebKitJavascriptResult</code> to construct a <code>WkJsCoreResult</code> object from which you can inquire its type and then ask it for the actual value stored in it through whatever method you feel would be appropriate to prcoess it. Now, all we need is to start the cascade:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb5-1" title="1"><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">&#39;__main__&#39;</span>:</a>
+<a class="sourceLine" id="cb5-2" title="2">    window <span class="op">=</span> create_window</a>
+<a class="sourceLine" id="cb5-3" title="3">    window.show_all()</a>
+<a class="sourceLine" id="cb5-4" title="4">    Gtk.main()</a></code></pre></div>
+<p>This should spawn a tiny window with the string <code>Lorem ipsum</code> and also print it to the standard output as expected from <code>js_finished_cb</code> callback. Close the window and our demonstration is complete. For a proper description of the methods available for <code>WkJsCoreResult</code>, take a look at the <a href="https://github.com/saifulbkhan/wkjscore-result/blob/master/src/wkjscoreresult.h">interface file</a>.</p>
+<p>Now I can write my Python app which <em>can</em> run Javascript through a WebView, although I did add another dependency. But its fast and compact so thats ok. Feel free to use it in your own projects. You can find <a href="https://github.com/saifulbkhan/wkjscore-result">wkjscore-result</a> on Github, along with instructions to build and install it. Please report any issues that you encounter.</p>
+      </div>
+    </div>
+  </section>
+    <div id="disqus_thread"></div>
+    <script>
+      /**
+       * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION
+       * BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+       * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT:
+       * https://disqus.com/admin/universalcode/#configuration-variables
+       */
+      var disqus_config = function () {
+        // Replace PAGE_URL with your page's canonical URL variable
+        this.page.url = "https://saifulbkhan.github.io/posts/wrap-webkit-js.html";
+  
+        // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        this.page.identifier = "04:17 PM, 30 Sep 2017 (UTC)";
+      };
+      (function () { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = 'https://saifulbkhan.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+      })();
+    </script>
+    <noscript>Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+    </noscript>    <footer>
+      <p class="copyright-text">© 2016 - 2021 Saiful Bari Khan</p>
+    </footer></body>
+
+</html>
