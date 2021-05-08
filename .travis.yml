@@ -35,6 +35,11 @@ script:
 - stack --no-terminal build
 - stack exec blog site
 
+cache:
+  directories:
+  - $HOME/.stack
+  - .stack-work
+
 deploy:
   # Push the built website resources to gh-pages
   provider: pages
