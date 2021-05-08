@@ -3,3 +3,4 @@ blog.cabal
 *~
 dist
 .shake
+.vscode
